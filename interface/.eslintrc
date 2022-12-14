@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "standard-with-typescript",
+    "react-app"
+  ],
+  "parserOptions": {
+    "project": "./interface/tsconfig.json"
+  }
+}

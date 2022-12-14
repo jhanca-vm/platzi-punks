@@ -1,10 +1,13 @@
 node_modules
 .env
+
+# Hardhat
+cache
+artifacts
 coverage
 coverage.json
 typechain
 typechain-types
 
-# Hardhat files
-cache
-artifacts
+# Vite
+dist
