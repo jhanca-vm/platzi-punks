@@ -7,12 +7,14 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 import "./PlatziPunksDNA.sol";
 
 contract PlatziPunks is
     ERC721,
     ERC721Enumerable,
     VRFConsumerBaseV2,
+    ConfirmedOwner,
     PlatziPunksDNA
 {
     using Strings for uint256;
@@ -27,16 +29,19 @@ contract PlatziPunks is
     uint32 constant NUM_WORDS = 1;
 
     uint256 public maxSupply;
-    mapping(uint256 => uint256) public tokenDNAs;
-
-    event Mint(uint256 tokenId);
+    uint256 internal lastRequestId;
+    mapping(uint256 => uint256) internal tokenDNAs;
 
     constructor(
         address vrfCoordinator,
         uint64 subscriptionId,
         bytes32 _keyHash,
         uint256 _maxSupply
-    ) ERC721("PlatziPunks", "PLPKS") VRFConsumerBaseV2(vrfCoordinator) {
+    )
+        ERC721("PlatziPunks", "PLPKS")
+        VRFConsumerBaseV2(vrfCoordinator)
+        ConfirmedOwner(msg.sender)
+    {
         COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
         s_subscriptionId = subscriptionId;
         keyHash = _keyHash;
@@ -46,7 +51,27 @@ contract PlatziPunks is
     function mint() public {
         require(totalSupply() < maxSupply, "No PlatziPunks left");
 
-        uint256 tokenId = COORDINATOR.requestRandomWords(
+        uint256 requestId = requestRandomWords();
+
+        _safeMint(msg.sender, tokenDNAs[lastRequestId]);
+
+        lastRequestId = requestId;
+    }
+
+    function imageByDNA(uint256 _dna) public view returns (string memory) {
+        return string(abi.encodePacked(_baseURI(), "?", _paramsURI(_dna)));
+    }
+
+    function generateInitialRequestId() external onlyOwner {
+        require(lastRequestId == 0, "a requestId has already been generated");
+
+        uint256 requestId = requestRandomWords();
+        
+        lastRequestId = requestId;
+    }
+
+    function requestRandomWords() internal returns (uint256) {
+        uint256 requestId = COORDINATOR.requestRandomWords(
             keyHash,
             s_subscriptionId,
             REQUEST_CONFIRMATIONS,
@@ -54,13 +79,9 @@ contract PlatziPunks is
             NUM_WORDS
         );
 
-        _safeMint(msg.sender, tokenId);
+        tokenDNAs[requestId] = 0;
 
-        emit Mint(tokenId);
-    }
-
-    function imageByDNA(uint256 _dna) public view returns (string memory) {
-        return string(abi.encodePacked(_baseURI(), "?", _paramsURI(_dna)));
+        return requestId;
     }
 
     function fulfillRandomWords(

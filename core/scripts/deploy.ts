@@ -20,6 +20,8 @@ async function main (): Promise<void> {
     10000
   )
 
+  await PlatziPunks.deployed()
+
   console.log(`PlatziPunks is deployed at: ${PlatziPunks.address}`)
 }
 

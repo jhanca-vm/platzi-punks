@@ -3,7 +3,7 @@ node_modules
 
 # Hardhat
 cache
-artifacts
+core/artifacts
 coverage
 coverage.json
 typechain
