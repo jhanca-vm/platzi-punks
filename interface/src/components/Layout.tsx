@@ -14,7 +14,7 @@ const Layout: FunctionComponent = () => (
       px={4}
     >
       <Header />
-      <Box as='main' maxW='6xl' mx='auto' p={4}>
+      <Box as='main' maxW='6xl' w='100%' mx='auto' p={4}>
         <Outlet />
       </Box>
       <Box

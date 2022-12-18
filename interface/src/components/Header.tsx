@@ -1,4 +1,5 @@
-import type { FunctionComponent } from 'react'
+import { FunctionComponent } from 'react'
+import { useAccount } from 'wagmi'
 import { Link } from 'react-router-dom'
 import {
   Box,
@@ -6,67 +7,47 @@ import {
   Flex,
   Heading,
   HStack,
-  IconButton,
-  Image,
-  Stack,
-  useDisclosure
+  Image
 } from '@chakra-ui/react'
-import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons'
 import Wallet from './Wallet'
 
 const Header: FunctionComponent = () => {
-  const links = [['Home', '/'], ['Punks', '/punks']]
-  const { isOpen, onClose, onOpen } = useDisclosure()
+  const { isConnected } = useAccount()
 
   return (
-    <>
-      <Flex
-        as='header'
-        color='gray.600'
-        minH='60px'
-        py={2}
+    <Flex
+      as='header'
+      color='gray.600'
+      minH='60px'
+      py={2}
+      px={{ base: 0, xl: 4 }}
+      borderBottom={1}
+      borderBottomStyle='solid'
+      borderBottomColor='gray.200'
+    >
+      <Container
+        as={Flex}
+        alignItems='center'
+        justifyContent='space-between'
+        maxW='6xl'
         px={{ base: 0, sm: 4 }}
-        borderBottom={1}
-        borderBottomStyle='solid'
-        borderBottomColor='gray.200'
       >
-        <Container
-          as={Flex}
-          alignItems='center'
-          justifyContent='space-between'
-          maxW='6xl'
-        >
-          <IconButton
-            size='sm'
-            icon={isOpen ? <CloseIcon /> : <HamburgerIcon boxSize={5} />}
-            aria-label='Open Menu'
-            display={{ md: 'none' }}
-            onClick={isOpen ? onClose : onOpen}
-          />
-          <HStack spacing={8} alignItems='center'>
-            <Flex alignItems='center'>
+        <HStack as='nav' spacing={8} alignItems='center'>
+          <Link to='/'>
+            <Flex alignItems='center' mb={1}>
               <Image src='/images/logo.svg' width='80px' />
               <Heading size='md' color='purple' mt={0.2} ml={1}>Punks</Heading>
             </Flex>
-            <HStack as='nav' spacing={4} display={{ base: 'none', md: 'flex' }}>
-              {links.map(([name, to]) => (
-                <Link to={to} key={name}>{name}</Link>
-              ))}
-            </HStack>
-          </HStack>
-          <Wallet />
-        </Container>
-      </Flex>
-      {isOpen && (
-        <Box pb={4} display={{ md: 'none' }}>
-          <Stack as={'nav'} pt={4} spacing={4}>
-            {links.map(([name, to]) => (
-              <Link to={to} key={name} onClick={onClose}>{name}</Link>
-            ))}
-          </Stack>
-        </Box>
-      )}
-    </>
+          </Link>
+          {isConnected && (
+            <Box display={{ base: 'none', sm: 'block' }}>
+              <Link to='/punks'>Mis Punks</Link>
+            </Box>
+          )}
+        </HStack>
+        <Wallet />
+      </Container>
+    </Flex>
   )
 }
 

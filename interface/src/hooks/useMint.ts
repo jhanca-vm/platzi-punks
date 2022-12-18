@@ -1,5 +1,9 @@
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
 import { type ToastId, useToast } from '@chakra-ui/react'
+import {
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction
+} from 'wagmi'
 import { BigNumber } from 'ethers'
 import { address, abi } from '../artifacts/PlatziPunks'
 
@@ -35,6 +39,7 @@ export default function useMint (): Mint {
     }),
     onError
   })
+
   const { isLoading: isPending } = useWaitForTransaction({
     hash: data?.hash,
     onSuccess: () => toast({

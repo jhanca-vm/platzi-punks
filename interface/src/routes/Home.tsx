@@ -1,9 +1,17 @@
 import type { FunctionComponent } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import { Link } from 'react-router-dom'
-import { Button, Heading, Spinner, Stack, Text } from '@chakra-ui/react'
+import {
+  Badge,
+  Button,
+  Flex,
+  Heading,
+  Image,
+  Spinner,
+  Stack,
+  Text
+} from '@chakra-ui/react'
 import useMint from '../hooks/useMint'
-import FallbackNFT from '../components/FallbackNFT'
 import NFT from '../components/NFT'
 
 const Home: FunctionComponent = () => {
@@ -71,14 +79,24 @@ const Home: FunctionComponent = () => {
           >
             {isLoading ? <Spinner color='white' /> : 'Obtén tu punk'}
           </Button>
-          <Link to="/punks">
-            <Button rounded='full' size='lg' fontWeight='normal' px={6}>
-              Galería
-            </Button>
-          </Link>
+          {isConnected && (
+            <Link to="/punks">
+              <Button rounded='full' size='lg' fontWeight='normal' px={6}>
+                Galería
+              </Button>
+            </Link>
+          )}
         </Stack>
       </Stack>
-      {isConnected ? <NFT /> : <FallbackNFT /> }
+      {isConnected
+        ? <NFT />
+        : (
+            <Flex flex={1} direction='column' align='center'>
+              <Image mt={{ base: -4, md: -16 }} src='https://avataaars.io/' />
+              <Badge mt={2}>Wallet desconectada</Badge>
+            </Flex>
+          )
+      }
     </Stack>
   )
 }
