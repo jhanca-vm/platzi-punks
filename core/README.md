@@ -1,3 +1,5 @@
+# Getting Started
+
 Remember to add the following environment variables in the `.env` file:
 
 ```
