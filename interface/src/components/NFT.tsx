@@ -13,7 +13,7 @@ const CustomSkeleton: FunctionComponent = () => (
   <Skeleton
     width='264px'
     height='280px'
-    rounded={20}
+    rounded='lg'
     mt={{ base: -4, md: -16 }}
   />
 )
